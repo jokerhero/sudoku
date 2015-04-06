@@ -444,7 +444,6 @@ namespace sudoku
             return ct;
         }
 
-        
         private static void writeArrayToConsole(int[][] array)
         {
             for (int i = 0; i < 9; i++)
