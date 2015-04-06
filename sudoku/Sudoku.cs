@@ -23,10 +23,12 @@ namespace sudoku
 
         int[][] puzzleSolution { get; set; }
         public int[][] puzzle { get; set; }
+        private int[][] origPuzzle { get; set; }
 
         public Sudoku()
         {
-            puzzleSolution = generatePuzzle();
+            puzzleSolution = copy(generateInitial());
+            //writeArrayToConsole(puzzleSolution);
         }
 
         public String getPuzzle()
@@ -39,6 +41,50 @@ namespace sudoku
                 ret += Environment.NewLine;
             }
             return ret;
+        }
+
+        public int[][] hint()
+        {
+            //randomly pick a 0 and set it to the real value
+            //or fix an incorrect entry
+            int[][] puz = copy(puzzle);
+
+            //writeArrayToConsole(puzzleSolution);
+
+            int count = 0;
+            for (int i = 0; i < 9; i++)
+                for (int j = 0; j < 9; j++)
+                    if (puz[i][j] == 0 || puz[i][j]!=puzzleSolution[i][j])
+                        count += 1;
+            if (count == 0)
+            {
+                //Console.WriteLine("No hints to give.");
+                return puzzle;
+            }
+
+            int t = randomNum(1, count);
+
+            count = 0;
+            for (int i = 0; i < 9; i++)
+                for (int j = 0; j < 9; j++)
+                    if (puz[i][j] == 0 || puz[i][j] != puzzleSolution[i][j])
+                    {
+                        count += 1;
+                        if (count == t)
+                        {
+                            //Console.WriteLine("Hint: " + puzzleSolution[i][j]);
+                            puz[i][j] = puzzleSolution[i][j];
+                            puzzle = copy(puz);
+                        }
+                    }
+
+            return puzzle;
+        }
+
+        public int[][] resetPuzzle()
+        {
+            puzzle = copy(origPuzzle);
+            return puzzle;
         }
 
         public bool checkSolution(int[][] toCheck)
@@ -56,28 +102,35 @@ namespace sudoku
         {
             //We need to remove numbers until we have our desired difficulty
             //On hard, we remove all of one number and start from there
-            puzzle = puzzleSolution;
+            puzzle = copy(puzzleSolution);
+
+            //writeArrayToConsole(puzzleSolution);
 
             switch (difficulty)
             {
                 case Difficulty.EASY:
-                    puzzle = generateDifficulty(40);
+                    puzzle = copy(generateDifficulty(40));
                     break;
                 case Difficulty.MEDIUM:
-                    puzzle = generateDifficulty(45);
+                    puzzle = copy(generateDifficulty(45));
                     break;
                 case Difficulty.HARD:
                     //first we will remove a number, this in itself will leave a solveable puzzle
-                    puzzle = removeRandomNumberAll(puzzle);
-                    puzzle = generateDifficulty(50);
+                    puzzle = copy(removeRandomNumberAll(puzzle));
+                    puzzle = copy(generateDifficulty(50));
                     break;
             }
+            //save for reset if needed
+            origPuzzle = copy(puzzle);
+
+            //writeArrayToConsole(puzzleSolution);
+
             return puzzle;
         }
 
         private int[][] generateDifficulty(int wantedCells)
         {
-            int[][] puz = puzzleSolution;
+            int[][] puz = copy(puzzleSolution);
             int emptyCells = 0;
 
             bool[][] puzTried = new bool[9][];
@@ -92,7 +145,7 @@ namespace sudoku
 
             while (wantedCells > emptyCells)
             {
-                Console.WriteLine("emptyCells: " + emptyCells);
+                //Console.WriteLine("emptyCells: " + emptyCells);
                 puz = removeCell(puz, ref puzTried, ref emptyCells);
             }
             
@@ -168,7 +221,7 @@ namespace sudoku
             return puz;
         }
         
-        private int[][] generatePuzzle()
+        private int[][] generateInitial()
         {
             //fill a base puzzle that is guaranteed to be solvable
             int[][] puz = new int[9][];
@@ -375,6 +428,19 @@ namespace sudoku
                 Console.WriteLine(line);
             }
         }
-        
+
+        //we have to copy the array explicitly or it will only be a pointer
+        private int[][] copy(int[][] arrayToCopy)
+        {
+            int[][] local = new int[9][];
+            for (int i = 0; i < 9; i++)
+            {
+                local[i] = new int[9];
+                for (int j = 0; j < 9; j++)
+                    local[i][j] = arrayToCopy[i][j];
+            }
+            return local;
+        }
+
     }
 }
