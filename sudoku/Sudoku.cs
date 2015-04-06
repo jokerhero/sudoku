@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.SolverFoundation.Services;
+using System.Data.SQLite;
 
 namespace sudoku
 {
@@ -24,6 +25,8 @@ namespace sudoku
         int[][] puzzleSolution { get; set; }
         public int[][] puzzle { get; set; }
         private int[][] origPuzzle { get; set; }
+
+        private SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source=Sudoku.sqlite;Version=3;");
 
         public Sudoku()
         {
@@ -87,7 +90,12 @@ namespace sudoku
             return puzzle;
         }
 
-        public bool checkSolution(int[][] toCheck)
+        public bool checkSolution()
+        {
+            return checkSolution(puzzle);
+        }
+
+        private bool checkSolution(int[][] toCheck)
         {
             //return true for a valid solution and false for an invalid solution
             for (int i = 0; i < 9; i++)
@@ -100,6 +108,10 @@ namespace sudoku
 
         public int[][] generatePuzzle(Difficulty difficulty)
         {
+            //I understand this is not the best measurement for difficulty.
+            //I chose this as it is the fastest way to generate puzzles on the fly
+            //with a reasonable expectation of difficulty
+
             //We need to remove numbers until we have our desired difficulty
             //On hard, we remove all of one number and start from there
             puzzle = copy(puzzleSolution);
@@ -310,7 +322,7 @@ namespace sudoku
             return ret;
         }
 
-        public static String solve(int[][] puzzleToSolve)
+        public static String solveString(int[][] puzzleToSolve)
         {
             int[][] puzzle = solveArr(puzzleToSolve, false);
             String ret = "";
@@ -320,6 +332,12 @@ namespace sudoku
                     ret += puzzle[i][j];
                 ret += Environment.NewLine;
             }
+            return ret;
+        }
+
+        public static int[][] solveArray(int[][] puzzleToSolve)
+        {
+            int[][] ret = copy(solveArr(puzzleToSolve, false));
             return ret;
         }
 
@@ -430,7 +448,7 @@ namespace sudoku
         }
 
         //we have to copy the array explicitly or it will only be a pointer
-        private int[][] copy(int[][] arrayToCopy)
+        private static int[][] copy(int[][] arrayToCopy)
         {
             int[][] local = new int[9][];
             for (int i = 0; i < 9; i++)
@@ -442,5 +460,44 @@ namespace sudoku
             return local;
         }
 
+        //Database Operations
+        public void saveProgress()
+        {
+            //The game is exiting, so we save it
+            //we need to turn the board into a String
+            //to store it. We also need a time from the
+            //GUI. We also need to save the date.
+        }
+
+        public void saveHighScore()
+        {
+            //save the results of this game to the HighScores table if it warrants it
+            //simple fields of difficulty, time, and date
+        }
+
+        public void getGame()
+        {
+            //need to specify data type to return and what parameter to return
+            //we need to retrieve the board from the database along with the time so far.
+        }
+
+        public void getGames()
+        {
+            //returns a list of all games that are saved
+            //games are sorted by date
+        }
+
+        public void getHighScore(Difficulty difficulty)
+        {
+            //returns the HighScores for the specified difficulty level
+            // we are only saving the ten best
+            //sorted by best time
+        }
+
+        public void getHighScores()
+        {
+            //returns high scores for all difficulties
+            //sorted by difficulty and best time
+        }
     }
 }
