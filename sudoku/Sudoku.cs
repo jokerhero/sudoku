@@ -22,9 +22,19 @@ namespace sudoku
             HARD
         }
 
+        public class Highscore
+        {
+            public long Date;
+            public String Difficulty;
+            public int time;
+        }
+
         int[][] puzzleSolution { get; set; }
         public int[][] puzzle { get; set; }
         private int[][] origPuzzle { get; set; }
+        private int totalTime { get; set; }         //the total time taken so far - seconds
+        private int currentTime { get; set; }       //time this session - seconds
+        private Difficulty selectedDifficulty {get; set; }
 
         private SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source=Sudoku.sqlite;Version=3;");
 
@@ -115,6 +125,7 @@ namespace sudoku
             //We need to remove numbers until we have our desired difficulty
             //On hard, we remove all of one number and start from there
             puzzle = copy(puzzleSolution);
+            selectedDifficulty = difficulty;
 
             //writeArrayToConsole(puzzleSolution);
 
@@ -467,37 +478,140 @@ namespace sudoku
             //we need to turn the board into a String
             //to store it. We also need a time from the
             //GUI. We also need to save the date.
+
+            String solution = convertIntToString(this.puzzleSolution);
+            String puzzle = convertIntToString(this.puzzle);
+            String original = convertIntToString(this.origPuzzle);
+            int time = this.totalTime;
+            DateTime now = DateTime.Now;
+            long date = now.Ticks;
+
+            m_dbConnection.Open();
+            String sql = "insert into games (date, solution, puzzle, original, time) values (" + date + ", " + solution + ", " + puzzle + ", " + original + ", " + time + ")";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+
+            m_dbConnection.Close();
         }
 
         public void saveHighScore()
         {
             //save the results of this game to the HighScores table if it warrants it
             //simple fields of difficulty, time, and date
+            String difficulty = this.selectedDifficulty.ToString();
+            int time = this.totalTime;
+            DateTime now = DateTime.Now;
+            long date = now.Ticks;
+
+            m_dbConnection.Open();
+            String sql = "insert into highscores (date, time, difficulty) values (" + date + ", " + time + ", " + difficulty + ")";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+
+            m_dbConnection.Close();
         }
 
-        public void getGame()
+        public int[][] loadGame(long dateTime)
         {
             //need to specify data type to return and what parameter to return
             //we need to retrieve the board from the database along with the time so far.
+            m_dbConnection.Open();
+            String sql = "select * from games where date=" + dateTime;
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                this.puzzleSolution = convertStringToInt((String)reader["solution"]);
+                this.puzzle = convertStringToInt((String)reader["puzzle"]);
+                this.origPuzzle = convertStringToInt((String)reader["original"]);
+                this.totalTime = Convert.ToInt32(reader["time"]);
+            }
+
+            m_dbConnection.Close();
+            return this.puzzle;
         }
 
-        public void getGames()
+        public List<long> getGames()
         {
             //returns a list of all games that are saved
             //games are sorted by date
+            List<long> list = new List<long>();
+            m_dbConnection.Open();
+            String sql = "select * from games order by date desc";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add((long)reader["date"]);
+            }
+
+            m_dbConnection.Close();
+            return list;
         }
 
-        public void getHighScore(Difficulty difficulty)
+        public List<Highscore> getHighScore(Difficulty difficulty)
         {
             //returns the HighScores for the specified difficulty level
-            // we are only saving the ten best
+            // we are only returning the ten best
             //sorted by best time
+
+            List<Highscore> scores = new List<Highscore>();
+
+            m_dbConnection.Open();
+            String sql = "select * from highscores where difficulty=" + difficulty.ToString() + " order by time limit 10";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                Highscore tScore = new Highscore();
+                tScore.time = (int)reader["time"];
+                tScore.Difficulty = (String)reader["difficulty"];
+                tScore.Date = (long)reader["date"];
+
+                scores.Add(tScore);
+            }
+
+            m_dbConnection.Close();
+
+            return scores;
         }
 
-        public void getHighScores()
+        public List<Highscore> getHighScores()
         {
-            //returns high scores for all difficulties
+            //returns top ten high scores for all difficulties
             //sorted by difficulty and best time
+            List<Highscore> scores = new List<Highscore>();
+            scores.AddRange(getHighScore(Difficulty.EASY));
+            scores.AddRange(getHighScore(Difficulty.MEDIUM));
+            scores.AddRange(getHighScore(Difficulty.HARD));
+            return scores;
+        }
+
+        private String convertIntToString(int[][] data)
+        {
+            //this is used to convert our games to String for saving in Database
+            //we do not need to worry about seperators as we only deal in single digits
+
+            String t = "";
+            for (int i = 0; i < 9; i++)
+                for (int j = 0; j < 9; j++)
+                    t = t + data[i][j];
+
+            return t;
+        }
+
+        private int[][] convertStringToInt(String data)
+        {
+            int[][] t = new int[9][];
+            for (int i = 0; i < 9; i++)
+            {
+                t[i] = new int[9];
+                for (int j = 0; j < 9; j++)
+                {
+                    t[i][j] = Convert.ToInt32(data[((i+1)*(j+1))-1]);
+                }
+            }
+            return t;
         }
     }
 }
