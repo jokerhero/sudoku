@@ -14,13 +14,160 @@ namespace sudoku
 {
     class Sudoku
     {
-        public int[][] puzzleSolution { get; set; }
+        public enum Difficulty
+        {
+            EASY,
+            MEDIUM,
+            HARD
+        }
+
+        int[][] puzzleSolution { get; set; }
+        public int[][] puzzle { get; set; }
 
         public Sudoku()
         {
             puzzleSolution = generatePuzzle();
         }
 
+        public String getPuzzle()
+        {
+            String ret = "";
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                    ret += puzzle[i][j];
+                ret += Environment.NewLine;
+            }
+            return ret;
+        }
+
+        public bool checkSolution(int[][] toCheck)
+        {
+            //return true for a valid solution and false for an invalid solution
+            for (int i = 0; i < 9; i++)
+                for (int j = 0; j < 9; j++)
+                    if (toCheck[i][j] != puzzleSolution[i][j])
+                        return false;
+
+            return true;
+        }
+
+        public int[][] generatePuzzle(Difficulty difficulty)
+        {
+            //We need to remove numbers until we have our desired difficulty
+            //On hard, we remove all of one number and start from there
+            puzzle = puzzleSolution;
+
+            switch (difficulty)
+            {
+                case Difficulty.EASY:
+                    puzzle = generateDifficulty(40);
+                    break;
+                case Difficulty.MEDIUM:
+                    puzzle = generateDifficulty(45);
+                    break;
+                case Difficulty.HARD:
+                    //first we will remove a number, this in itself will leave a solveable puzzle
+                    puzzle = removeRandomNumberAll(puzzle);
+                    puzzle = generateDifficulty(50);
+                    break;
+            }
+            return puzzle;
+        }
+
+        private int[][] generateDifficulty(int wantedCells)
+        {
+            int[][] puz = puzzleSolution;
+            int emptyCells = 0;
+
+            bool[][] puzTried = new bool[9][];
+            for (int i = 0; i < 9; i++)
+            {
+                puzTried[i] = new bool[9];
+                for (int j = 0; j < 9; j++)
+                {
+                    puzTried[i][j] = false;
+                }
+            }
+
+            while (wantedCells > emptyCells)
+            {
+                Console.WriteLine("emptyCells: " + emptyCells);
+                puz = removeCell(puz, ref puzTried, ref emptyCells);
+            }
+            
+            return puz;
+        }
+
+        private int[][] removeCell(int[][] puz, ref bool[][] overlay, ref int emptyCells)
+        {
+            int[][] tempPuz = puz;
+            
+            int count = 0;
+            //first get a list of cells in which have not been attempted to remove
+            for (int i=0; i<9; i++)
+                for (int j = 0; j < 9; j++)
+                    if (tempPuz[i][j] > 0 && !overlay[i][j])
+                    {
+                        count += 1;
+                    }
+
+            //if count is 0 then we have tried all possibilities to no avail
+            //so for now just increment the total missing cells until we end
+            if (count == 0)
+            {
+                emptyCells += 1;
+                return tempPuz;
+            }
+
+            //now pick one randomly
+            int t = randomNum(1, count);
+
+            //now run back through and fix this guy up, being sure to test his uniqueness
+            count = 0;
+            for (int i = 0; i < 9; i++)
+                for (int j = 0; j < 9; j++)
+                {
+                    //Console.WriteLine("Field: " + tempPuz[i][j] + " overlay: " + overlay[i][j]);
+                    if (tempPuz[i][j] > 0 && !overlay[i][j])
+                    {
+                        count += 1;
+                        if (count == t)
+                        {
+                            int temp = tempPuz[i][j];
+                            tempPuz[i][j] = 0;
+                            int sols = solvedSolutions(tempPuz);
+                            //Console.WriteLine("tempPuz: " + temp + " overlay: " + overlay[i][j] + " solutions: " + sols);
+                            if (sols != 1)
+                            {
+                                //Console.WriteLine("tempPuz: " + temp + " overlay: " + overlay[i][j] + " solutions: " + sols);
+                                tempPuz[i][j] = temp;
+                                overlay[i][j] = true;
+                            }
+                            else
+                            {
+                                //Console.WriteLine("tempPuz: " + temp + " overlay: " + overlay[i][j] + " solutions: " + sols);
+                                overlay[i][j] = true;
+                                emptyCells += 1;
+                            }
+                        }
+                    }
+                }
+
+            return tempPuz;
+        }
+
+        private int[][] removeRandomNumberAll(int[][] puz)
+        {
+            //this sucker just removes all of a random number from the puzzle
+            int r = randomNum(1, 9);
+            for (int i = 0; i < 9; i++)
+                for (int j = 0; j < 9; j++)
+                    if (puz[i][j] == r)
+                        puz[i][j] = 0;
+            return puz;
+        }
+        
         private int[][] generatePuzzle()
         {
             //fill a base puzzle that is guaranteed to be solvable
@@ -112,7 +259,7 @@ namespace sudoku
 
         public static String solve(int[][] puzzleToSolve)
         {
-            int[][] puzzle = solveArr(puzzleToSolve);
+            int[][] puzzle = solveArr(puzzleToSolve, false);
             String ret = "";
             for (int i = 0; i < 9; i++)
             {
@@ -123,7 +270,13 @@ namespace sudoku
             return ret;
         }
 
-        private static int[][] solveArr(int[][] puzzleToSolve)
+        private static int solvedSolutions(int[][] puzzleToSolve)
+        {
+            int[][] solutions = solveArr(puzzleToSolve, true);
+            return solutions[0][0];
+        }
+
+        private static int[][] solveArr(int[][] puzzleToSolve, bool count)
         {
             //This solver is based on code provided by James McCaffrey:
             //https://msdn.microsoft.com/en-us/magazine/dn759446.aspx
@@ -132,6 +285,7 @@ namespace sudoku
             //setting up the solver
             Decision[][] grid = new Decision[9][];
             SolverContext problem = SolverContext.GetContext();
+            problem.ClearModel();
             Model model = problem.CreateModel();
 
             for (int i = 0; i < 9; i++)
@@ -172,8 +326,14 @@ namespace sudoku
                         model.AddConstraint("v" + i + j, grid[i][j] == puzzleToSolve[i][j]);
             
             //now solve it
-            //int numSolutions = NumberSolutions(problem);
-            //Console.WriteLine("\nThere are " + numSolutions + " solutions\n");
+            if (count)
+            {
+                int numSolutions = NumberSolutions(problem);
+                int[][] solutions = new int[1][];
+                solutions[0] = new int[1];
+                solutions[0][0] = numSolutions;
+                return solutions;
+            }
 
             Solution solution = problem.Solve();
 
