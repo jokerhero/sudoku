@@ -33,18 +33,20 @@ namespace sudoku
         public int[][] puzzle { get; set; }
         private int[][] origPuzzle { get; set; }
         private int totalTime { get; set; }         //the total time taken so far - seconds
-        private int currentTime { get; set; }       //time this session - seconds
         private Difficulty selectedDifficulty {get; set; }
 
         private SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source=Sudoku.sqlite;Version=3;");
 
         public Sudoku()
         {
+            totalTime = 0;
             puzzleSolution = copy(generateInitial());
             //writeArrayToConsole(puzzleSolution);
         }
 
-        public String getPuzzle()
+        #region "Public Methods Related to normal Game Play"
+        /* no longer used, was useful for testing
+        private String getPuzzle()
         {
             String ret = "";
             for (int i = 0; i < 9; i++)
@@ -55,6 +57,7 @@ namespace sudoku
             }
             return ret;
         }
+        */
 
         public int[][] hint()
         {
@@ -105,17 +108,6 @@ namespace sudoku
             return checkSolution(puzzle);
         }
 
-        private bool checkSolution(int[][] toCheck)
-        {
-            //return true for a valid solution and false for an invalid solution
-            for (int i = 0; i < 9; i++)
-                for (int j = 0; j < 9; j++)
-                    if (toCheck[i][j] != puzzleSolution[i][j])
-                        return false;
-
-            return true;
-        }
-
         public int[][] generatePuzzle(Difficulty difficulty)
         {
             //I understand this is not the best measurement for difficulty.
@@ -151,6 +143,27 @@ namespace sudoku
             return puzzle;
         }
 
+        public static int[][] solveArray(int[][] puzzleToSolve)
+        {
+            int[][] ret = copy(solveArr(puzzleToSolve, false));
+            return ret;
+        }
+        
+        #endregion
+
+        #region "Puzzle Generation"
+
+        private bool checkSolution(int[][] toCheck)
+        {
+            //return true for a valid solution and false for an invalid solution
+            for (int i = 0; i < 9; i++)
+                for (int j = 0; j < 9; j++)
+                    if (toCheck[i][j] != puzzleSolution[i][j])
+                        return false;
+
+            return true;
+        }
+
         private int[][] generateDifficulty(int wantedCells)
         {
             int[][] puz = copy(puzzleSolution);
@@ -171,17 +184,17 @@ namespace sudoku
                 //Console.WriteLine("emptyCells: " + emptyCells);
                 puz = removeCell(puz, ref puzTried, ref emptyCells);
             }
-            
+
             return puz;
         }
 
         private int[][] removeCell(int[][] puz, ref bool[][] overlay, ref int emptyCells)
         {
             int[][] tempPuz = puz;
-            
+
             int count = 0;
             //first get a list of cells in which have not been attempted to remove
-            for (int i=0; i<9; i++)
+            for (int i = 0; i < 9; i++)
                 for (int j = 0; j < 9; j++)
                     if (tempPuz[i][j] > 0 && !overlay[i][j])
                     {
@@ -243,7 +256,7 @@ namespace sudoku
                         puz[i][j] = 0;
             return puz;
         }
-        
+
         private int[][] generateInitial()
         {
             //fill a base puzzle that is guaranteed to be solvable
@@ -259,7 +272,7 @@ namespace sudoku
             puz[8] = new int[] { 9, 1, 2, 3, 4, 5, 6, 7, 8 };
 
             //minimum of 50 iterations max of 100
-            for (int i=randomNum(1,50); i<=100; i++)
+            for (int i = randomNum(1, 50); i <= 100; i++)
             {
                 //transpose the puzzle a min of 10 and max of 50
                 for (int j = randomNum(1, 40); j <= 50; j++)
@@ -273,16 +286,16 @@ namespace sudoku
             return puz;
         }
 
-        //random numbers between two values inclusive
         private int randomNum(int begin, int end)
         {
+            //random numbers between two values inclusive
             Random rnd = new Random(DateTime.Now.Millisecond);
             return rnd.Next(begin, end + 1);
         }
 
-        //used to swap rows for puzzle generation
         private int[][] swapRowSection(int[][] puzzle, int rowSection)
         {
+            //used to swap rows for puzzle generation
             //this function randomly picks a row in the section and swaps it with another row in the section
             //row section is 1 ,2, or 3 where 1 is rows 1,2,3: 2 is rows 4,5,6: 3 is 7,8,9
             int x = randomNum(1, 3);
@@ -306,26 +319,26 @@ namespace sudoku
                 }
             }
             //Console.WriteLine("x: " + x + " ,y: " + y);
-            int[] row = puzzle[findRow(x,rowSection)];
-            puzzle[findRow(x,rowSection)] = puzzle[findRow(y,rowSection)];
-            puzzle[findRow(y,rowSection)] = row;
+            int[] row = puzzle[findRow(x, rowSection)];
+            puzzle[findRow(x, rowSection)] = puzzle[findRow(y, rowSection)];
+            puzzle[findRow(y, rowSection)] = row;
             return puzzle;
         }
 
-        //used to find actual row
         private int findRow(int row, int section)
         {
-            return 8-(9-((section*3)-(3-row)));
+            //used to find actual row
+            return 8 - (9 - ((section * 3) - (3 - row)));
         }
 
-        //used to turn the puzzle easily
         private int[][] transpose(int[][] puzzle)
         {
+            //used to turn the puzzle easily
             int[][] ret = new int[9][];
             for (int i = 0; i < 9; i++)
             {
                 ret[i] = new int[9];
-                for (int j=0; j<9; j++)
+                for (int j = 0; j < 9; j++)
                     ret[i][j] = puzzle[j][i];
             }
 
@@ -333,7 +346,10 @@ namespace sudoku
             return ret;
         }
 
-        public static String solveString(int[][] puzzleToSolve)
+        #endregion
+
+        /* was useful for testing
+        private static String solveString(int[][] puzzleToSolve)
         {
             int[][] puzzle = solveArr(puzzleToSolve, false);
             String ret = "";
@@ -345,12 +361,9 @@ namespace sudoku
             }
             return ret;
         }
+        */
 
-        public static int[][] solveArray(int[][] puzzleToSolve)
-        {
-            int[][] ret = copy(solveArr(puzzleToSolve, false));
-            return ret;
-        }
+        #region "Solver Code"
 
         private static int solvedSolutions(int[][] puzzleToSolve)
         {
@@ -444,6 +457,9 @@ namespace sudoku
             return ct;
         }
 
+        #endregion
+
+        /* was useful for testing
         private static void writeArrayToConsole(int[][] array)
         {
             for (int i = 0; i < 9; i++)
@@ -456,10 +472,13 @@ namespace sudoku
                 Console.WriteLine(line);
             }
         }
+        */
 
-        //we have to copy the array explicitly or it will only be a pointer
+        #region "Utility Methods"
+
         private static int[][] copy(int[][] arrayToCopy)
         {
+            //we have to copy the array explicitly or it will only be a pointer
             int[][] local = new int[9][];
             for (int i = 0; i < 9; i++)
             {
@@ -470,7 +489,9 @@ namespace sudoku
             return local;
         }
 
-        //Database Operations
+        #endregion
+
+        #region "Database Operations"
         public void saveProgress()
         {
             //The game is exiting, so we save it
@@ -612,5 +633,40 @@ namespace sudoku
             }
             return t;
         }
+        #endregion
+
+        #region "Game Timer"
+
+        private DateTime startTime;
+
+        public int startTimer()
+        {
+            //resolution of DateTime is approximately 10ms, which is more than we need
+            startTime = DateTime.UtcNow;
+            return totalTime;
+        }
+
+        public int pauseTimer()
+        {
+            DateTime pausedTime = DateTime.UtcNow;
+            int elapsedTime = (int)(pausedTime - startTime).TotalSeconds;
+            totalTime += elapsedTime;
+            return totalTime;
+        }
+
+        public int stopTimer()
+        {
+            //we are doing nothing different from pauseTimer
+            return pauseTimer();
+        }
+
+        public int getTimer()
+        {
+            DateTime now = DateTime.UtcNow;
+            int elapsedTime = (int)(now - startTime).TotalSeconds;
+            //we do not want to set the totalTime, thats the start/pause functions job
+            return totalTime + elapsedTime;
+        }
+        #endregion
     }
 }
