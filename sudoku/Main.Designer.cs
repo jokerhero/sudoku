@@ -40,7 +40,7 @@
             this.textBox1.Location = new System.Drawing.Point(13, 13);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(259, 207);
+            this.textBox1.Size = new System.Drawing.Size(21, 23);
             this.textBox1.TabIndex = 0;
             // 
             // button1
@@ -96,6 +96,7 @@
             this.Controls.Add(this.textBox1);
             this.Name = "Main";
             this.Text = "Main";
+            this.Load += new System.EventHandler(this.Main_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

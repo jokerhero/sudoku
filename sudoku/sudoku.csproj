@@ -14,6 +14,21 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -33,6 +48,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Solver.Foundation, Version=3.0.2.10889, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -57,6 +76,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls.Designer.cs">
+      <DependentUpon>Controls.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmSudokuMM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSudokuMM.Designer.cs">
+      <DependentUpon>frmSudokuMM.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmHighScores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmHighScores.Designer.cs">
+      <DependentUpon>frmHighScores.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmGameBoard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmGameBoard.Designer.cs">
+      <DependentUpon>frmGameBoard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmNewGame.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmNewGame.Designer.cs">
+      <DependentUpon>frmNewGame.cs</DependentUpon>
+    </Compile>
     <Compile Include="History.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
@@ -67,6 +116,21 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sudoku.cs" />
+    <EmbeddedResource Include="Controls.resx">
+      <DependentUpon>Controls.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSudokuMM.resx">
+      <DependentUpon>frmSudokuMM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmHighScores.resx">
+      <DependentUpon>frmHighScores.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmGameBoard.resx">
+      <DependentUpon>frmGameBoard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmNewGame.resx">
+      <DependentUpon>frmNewGame.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
@@ -95,6 +159,28 @@
   <ItemGroup>
     <Content Include="SQLite\System.Data.SQLite.dll" />
     <Content Include="SQLite\System.Data.SQLite.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
