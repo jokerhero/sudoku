@@ -82,6 +82,7 @@
     <Compile Include="Controls.Designer.cs">
       <DependentUpon>Controls.cs</DependentUpon>
     </Compile>
+    <Compile Include="Difficulty.cs" />
     <Compile Include="frmSudokuMM.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,6 +106,12 @@
     </Compile>
     <Compile Include="frmNewGame.Designer.cs">
       <DependentUpon>frmNewGame.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GridSelector.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GridSelector.Designer.cs">
+      <DependentUpon>GridSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="History.cs" />
     <Compile Include="Main.cs">
@@ -130,6 +137,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmNewGame.resx">
       <DependentUpon>frmNewGame.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GridSelector.resx">
+      <DependentUpon>GridSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>

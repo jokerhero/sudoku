@@ -15,13 +15,6 @@ namespace sudoku
 {
     class Sudoku
     {
-        public enum Difficulty
-        {
-            EASY,
-            MEDIUM,
-            HARD
-        }
-
         public class Highscore
         {
             public long Date;
@@ -40,8 +33,22 @@ namespace sudoku
         public Sudoku()
         {
             totalTime = 0;
-            puzzleSolution = copy(generateInitial());
+            puzzleSolution = copy(initializePuzzleArray());
+            puzzle = copy(puzzleSolution);
+            totalTime = 0;
             //writeArrayToConsole(puzzleSolution);
+        }
+
+        private int[][] initializePuzzleArray()
+        {
+            int[][] puz = new int[9][];
+            for (int i = 0; i < 9; i++)
+            {
+                puz[i] = new int[9];
+                for (int j = 0; j < 9; j++)
+                    puz[i][j] = 0;
+            }       
+            return puz;
         }
 
         #region "Public Methods Related to normal Game Play"
@@ -116,6 +123,9 @@ namespace sudoku
 
             //We need to remove numbers until we have our desired difficulty
             //On hard, we remove all of one number and start from there
+            puzzleSolution = copy(generateInitial());
+            totalTime = 0;
+
             puzzle = copy(puzzleSolution);
             selectedDifficulty = difficulty;
 
@@ -166,7 +176,7 @@ namespace sudoku
 
         private int[][] generateDifficulty(int wantedCells)
         {
-            int[][] puz = copy(puzzleSolution);
+            int[][] puz = copy(generateInitial());
             int emptyCells = 0;
 
             bool[][] puzTried = new bool[9][];

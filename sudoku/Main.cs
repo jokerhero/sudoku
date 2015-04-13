@@ -22,7 +22,7 @@ namespace sudoku
         private void button1_Click(object sender, EventArgs e)
         {
             sud = new Sudoku();
-            int[][] puzzle = sud.generatePuzzle(Sudoku.Difficulty.HARD);
+            int[][] puzzle = sud.generatePuzzle(Difficulty.HARD);
 
             fillGrid(puzzle);
 
@@ -33,7 +33,7 @@ namespace sudoku
         private void button2_Click(object sender, EventArgs e)
         {
             sud = new Sudoku();
-            int[][] puzzle = sud.generatePuzzle(Sudoku.Difficulty.MEDIUM);
+            int[][] puzzle = sud.generatePuzzle(Difficulty.MEDIUM);
 
             fillGrid(puzzle);
             button4.Enabled = true;
@@ -42,7 +42,7 @@ namespace sudoku
         private void button3_Click(object sender, EventArgs e)
         {
             sud = new Sudoku();
-            int[][] puzzle = sud.generatePuzzle(Sudoku.Difficulty.EASY);
+            int[][] puzzle = sud.generatePuzzle(Difficulty.EASY);
 
             fillGrid(puzzle);
             button4.Enabled = true;

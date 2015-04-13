@@ -23,12 +23,12 @@ namespace sudoku
         //Opens New Game
         private void btnNewGame_Click(object sender, EventArgs e)
         {
-            frmNewGame new_game = new frmNewGame();
+            frmNewGame new_game = new frmNewGame(this);
             //Gives reference to new window and hide this while opening next
             //new_game.RefTofrmSudokuMM = this;
             //this.Visible = false;
             new_game.Show();
-            this.Hide();
+            //this.Hide();
         }
         //Opens Solver
         private void btnSolver_Click(object sender, EventArgs e)

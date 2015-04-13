@@ -42,6 +42,7 @@
             this.tsReset = new System.Windows.Forms.ToolStripMenuItem();
             this.tsHint = new System.Windows.Forms.ToolStripMenuItem();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.toolStripMenuTimer = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,10 +53,11 @@
             this.tsHelp,
             this.tsSolver,
             this.tsReset,
-            this.tsHint});
+            this.tsHint,
+            this.toolStripMenuTimer});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(644, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(508, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -98,6 +100,7 @@
             this.tsDone.Name = "tsDone";
             this.tsDone.Size = new System.Drawing.Size(152, 22);
             this.tsDone.Text = "Done";
+            this.tsDone.Click += new System.EventHandler(this.tsDone_Click);
             // 
             // tsSave
             // 
@@ -133,6 +136,7 @@
             this.tsReset.Name = "tsReset";
             this.tsReset.Size = new System.Drawing.Size(47, 20);
             this.tsReset.Text = "Reset";
+            this.tsReset.Click += new System.EventHandler(this.tsReset_Click);
             // 
             // tsHint
             // 
@@ -140,15 +144,33 @@
             this.tsHint.Size = new System.Drawing.Size(42, 20);
             this.tsHint.Text = "Hint";
             // 
-            // frmMediumGame
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 500;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // toolStripMenuTimer
+            // 
+            this.toolStripMenuTimer.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripMenuTimer.Name = "toolStripMenuTimer";
+            this.toolStripMenuTimer.Size = new System.Drawing.Size(58, 20);
+            this.toolStripMenuTimer.Text = "Time: 0";
+            // 
+            // frmGameBoard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(644, 522);
+            this.ClientSize = new System.Drawing.Size(508, 526);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "frmMediumGame";
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(524, 565);
+            this.MinimumSize = new System.Drawing.Size(524, 565);
+            this.Name = "frmGameBoard";
             this.Text = "Sudoku";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmGameBoard_FormClosing);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.frmGameBoard_Paint);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -171,5 +193,6 @@
         private System.Windows.Forms.ToolStripMenuItem tsExit;
         private System.Windows.Forms.ToolStripMenuItem tsReset;
         private System.Windows.Forms.ToolStripMenuItem tsHint;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuTimer;
     }
 }
