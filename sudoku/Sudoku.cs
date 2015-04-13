@@ -28,8 +28,6 @@ namespace sudoku
         private int totalTime { get; set; }         //the total time taken so far - seconds
         private Difficulty selectedDifficulty {get; set; }
 
-        private SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source=Sudoku.sqlite;Version=3;");
-
         public Sudoku()
         {
             totalTime = 0;
@@ -168,7 +166,7 @@ namespace sudoku
             //return true for a valid solution and false for an invalid solution
             for (int i = 0; i < 9; i++)
                 for (int j = 0; j < 9; j++)
-                    if (toCheck[i][j] != puzzleSolution[i][j])
+                    if (toCheck[i][j] != puzzleSolution[i][j] || puzzleSolution[i][j] == 0)
                         return false;
 
             return true;
@@ -195,6 +193,7 @@ namespace sudoku
                 puz = removeCell(puz, ref puzTried, ref emptyCells);
             }
 
+            writeArrayToConsole(puzzle);
             return puz;
         }
 
@@ -285,10 +284,10 @@ namespace sudoku
             puz[8] = new int[] { 9, 1, 2, 3, 4, 5, 6, 7, 8 };
 
             //minimum of 50 iterations max of 100
-            for (int i = randomNum(1, 50); i <= 100; i++)
+            for (int i = randomNum(1, 500); i <= 500; i++)
             {
                 //transpose the puzzle a min of 10 and max of 50
-                for (int j = randomNum(1, 40); j <= 50; j++)
+                for (int j = randomNum(1, 500); j <= 500; j++)
                 {
                     puz = transpose(puz);
                     //swap a rowSection for each transpose
@@ -472,7 +471,7 @@ namespace sudoku
 
         #endregion
 
-        /* was useful for testing
+        ///* was useful for testing
         private static void writeArrayToConsole(int[][] array)
         {
             for (int i = 0; i < 9; i++)
@@ -485,7 +484,7 @@ namespace sudoku
                 Console.WriteLine(line);
             }
         }
-        */
+        //*/
 
         #region "Utility Methods"
 
@@ -505,8 +504,13 @@ namespace sudoku
         #endregion
 
         #region "Database Operations"
+
+        private static String path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        private SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source=" + path + "\\sudoku.sqlite;Version=3;");
+
         public void saveProgress()
         {
+            checkDatabaseExists();
             //The game is exiting, so we save it
             //we need to turn the board into a String
             //to store it. We also need a time from the
@@ -518,9 +522,10 @@ namespace sudoku
             int time = this.totalTime;
             DateTime now = DateTime.Now;
             long date = now.Ticks;
+            String difficulty = selectedDifficulty.ToString();
 
             m_dbConnection.Open();
-            String sql = "insert into games (date, solution, puzzle, original, time) values (" + date + ", " + solution + ", " + puzzle + ", " + original + ", " + time + ")";
+            String sql = "insert into games (date, solution, puzzle, original, time, difficulty) values (" + date + ", '" + solution + "', '" + puzzle + "', '" + original + "', " + time + ", '" + difficulty + "')";
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
 
@@ -529,6 +534,8 @@ namespace sudoku
 
         public void saveHighScore()
         {
+            checkDatabaseExists();
+            Console.Out.WriteLine(path);
             //save the results of this game to the HighScores table if it warrants it
             //simple fields of difficulty, time, and date
             String difficulty = this.selectedDifficulty.ToString();
@@ -537,7 +544,7 @@ namespace sudoku
             long date = now.Ticks;
 
             m_dbConnection.Open();
-            String sql = "insert into highscores (date, time, difficulty) values (" + date + ", " + time + ", " + difficulty + ")";
+            String sql = "insert into highscores (date, time, difficulty) values (" + date + ", '" + time + "', '" + difficulty + "')";
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
 
@@ -558,7 +565,16 @@ namespace sudoku
                 this.puzzle = convertStringToInt((String)reader["puzzle"]);
                 this.origPuzzle = convertStringToInt((String)reader["original"]);
                 this.totalTime = Convert.ToInt32(reader["time"]);
+                this.selectedDifficulty = (Difficulty)reader["difficulty"];
             }
+            reader.Close();
+            command.Dispose();
+
+            //now delete the game from the database
+            sql = "DELETE FROM games WHERE date=" + dateTime;
+            command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+            command.Dispose();
 
             m_dbConnection.Close();
             return this.puzzle;
@@ -646,6 +662,38 @@ namespace sudoku
             }
             return t;
         }
+
+        private void checkDatabaseExists()
+        {
+            m_dbConnection.Open();
+            string sql_high = "SELECT name FROM sqlite_master WHERE type='table' AND name='highscores';";
+            string sql_game = "SELECT name FROM sqlite_master WHERE type='table' AND name='games';";
+            SQLiteCommand command = new SQLiteCommand(sql_high, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                String sql = "CREATE TABLE highscores(date NUMERIC PRIMARY KEY, time TEXT, difficulty TEXT)";
+                SQLiteCommand cmd = new SQLiteCommand(sql, m_dbConnection);
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+            }
+            reader.Close();
+            command.Dispose();
+            command = new SQLiteCommand(sql_game, m_dbConnection);
+            reader = command.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                String sql = "CREATE TABLE games (date NUMERIC PRIMARY KEY, solution TEXT, puzzle TEXT, original TEXT, time INTEGER, difficulty TEXT)";
+                SQLiteCommand cmd = new SQLiteCommand(sql, m_dbConnection);
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+            }
+            reader.Close();
+            command.Dispose();
+            m_dbConnection.Close();
+
+        }
+
         #endregion
 
         #region "Game Timer"

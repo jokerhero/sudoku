@@ -24,6 +24,9 @@ namespace sudoku
     {
         Sudoku puzzle;
         TextBox[,] grid = new TextBox[9, 9];
+        int hintsUsed = 0;
+        bool solver = false;
+        bool inProgress = true;
 
         public frmGameBoard(Difficulty difficulty)
         {
@@ -39,7 +42,9 @@ namespace sudoku
             puzzle = new Sudoku();
             InitializeComponent();
             initGrid();
-            startTimer();
+            //startTimer(); no need for a timer on the solver
+            solver = true;
+            inProgress = false;
         }
 
         private void startTimer()
@@ -60,7 +65,6 @@ namespace sudoku
                     grid[i, j].Font = puzzle.puzzle[i][j] == 0 ? new Font(grid[i, j].Font.FontFamily,fontSize, FontStyle.Regular) : new Font(grid[i, j].Font.FontFamily, fontSize, FontStyle.Bold);
                     grid[i, j].ReadOnly = true;
                     grid[i, j].TabStop = false;
-                    //I would like to change the coloring here to be grid centric as well
                     if (i < 3 && (j < 3 || j > 5) || i > 5 && (j < 3 || j > 5) || (i > 2 && i < 6) && (j > 2 && j < 6))
                     {
                         grid[i, j].BackColor = (i + j) % 2 == 0 ? Color.LightBlue : Color.White;
@@ -69,10 +73,6 @@ namespace sudoku
                     {
                         grid[i, j].BackColor = (i + j) % 2 == 0 ? Color.LemonChiffon : Color.White;
                     }
-                    
-                    //if ((i>2||i<6) && (j>2||j<6))
-                    //    grid[i, j].BackColor = (i + j) % 2 == 0 ? Color.LightBlue : Color.White;
-
                     grid[i, j].Multiline = true;
                     grid[i, j].Size = new Size(50, 50);
                     grid[i, j].Location = new Point(10 + (j*55), 30 + (i*55));
@@ -80,6 +80,7 @@ namespace sudoku
                     grid[i, j].MouseDown += new MouseEventHandler(HandleInput);
                     grid[i, j].ShortcutsEnabled = false;
                     grid[i, j].Cursor = Cursors.Arrow;
+                    grid[i, j].Tag = i.ToString() + j.ToString();
                     if (puzzle.puzzle[i][j] == 0)
                     {
                         GridSelector selector = new GridSelector(grid[i,j]);
@@ -101,9 +102,17 @@ namespace sudoku
                     grid[i, j].Text = puzzle.puzzle[i][j] == 0 ? "" : puzzle.puzzle[i][j].ToString();
                     if (puzzle.puzzle[i][j] == 0)
                     {
-                        GridSelector selector = (GridSelector)grid[i, j].Controls.Find("grid",true)[0];
+                        GridSelector selector = (GridSelector)grid[i, j].Controls.Find("grid", true)[0];
                         selector.reset();
                         selector.Visible = true;
+                        if (grid[i, j].ForeColor != Color.Black)
+                            grid[i, j].ForeColor = Color.DarkBlue;
+                    }
+                    else
+                    {
+                        GridSelector selector = (GridSelector)grid[i, j].Controls.Find("grid", true)[0];
+                        selector.reset();
+                        selector.Visible = false;
                     }
                 }
         }
@@ -121,6 +130,7 @@ namespace sudoku
             {
                 frmNewGame new_game = new frmNewGame(this);
                 new_game.Show();
+                inProgress = false;
                 this.Close();
             }
         }
@@ -133,7 +143,8 @@ namespace sudoku
 
         private void tsExit_Click(object sender, EventArgs e)
         {
-            closing();
+            //closing();
+            this.Close();
         }
 
         private void tsHelp_Click(object sender, EventArgs e)
@@ -141,11 +152,11 @@ namespace sudoku
             MessageBox.Show("Black numbers within the grid are clues." + "\n" + "Blue numbers within the grid are entries.");
         }
 
-        private void tsSolver_Click(object sender, EventArgs e)
-        {
-            frmGameBoard solver = new frmGameBoard();
-            solver.Show();
-        }
+        //private void tsSolver_Click(object sender, EventArgs e)
+        //{
+        //    frmGameBoard solver = new frmGameBoard();
+        //    solver.Show();
+        //}
 
         private void HandleInput(object sender, MouseEventArgs e)
         {
@@ -153,7 +164,7 @@ namespace sudoku
             if (e.Button == MouseButtons.Right)
             {
                 TextBox textBox = (TextBox)sender;
-                if (textBox.ForeColor != Color.Black)
+                if (textBox.ForeColor == Color.DarkBlue)
                 {
                     GridSelector selector = (GridSelector)textBox.Controls.Find("grid", true)[0];
                     selector.selectedNumber = 0;
@@ -171,17 +182,29 @@ namespace sudoku
         {
             //this handles the number in a gridbox changing
             GridSelector selector = (GridSelector) sender;
+            TextBox textBox = (TextBox)selector.Parent;
             int selected = selector.selectedNumber; //needed to prevent cs1690
             if (selected != 0)
             {
                 selector.owner.Text = selected.ToString();
                 selector.Visible = false;
+                //we need to update our puzzle as well
+                String tag = textBox.Tag.ToString();
+                int row = Convert.ToInt32(tag[0].ToString());
+                int col = Convert.ToInt32(tag[1].ToString());
+                puzzle.puzzle[row][col] = selected;
             }
         }
 
         private void closing()
         {
             //todo add save
+            //this.Close();
+            if (inProgress)
+            {
+                puzzle.stopTimer();
+                puzzle.saveProgress();
+            }
             //this.Close();
         }
 
@@ -195,6 +218,33 @@ namespace sudoku
         private void tsDone_Click(object sender, EventArgs e)
         {
             //At this point, we need to check to see if the game is truly complete or not
+            if (solver)
+            {
+                //we just need to check for the solution now
+                puzzle.puzzle = Sudoku.solveArray(puzzle.puzzle);
+                fillGrid();
+            }
+            else
+            {
+                if (puzzle.checkSolution())
+                {
+                    inProgress = false;
+                    //true so save high score, if no hints were used
+                    puzzle.stopTimer();
+                    if (hintsUsed == 0)
+                    {
+                        puzzle.saveHighScore();
+                    }
+                    this.Close();
+                }
+                else
+                {
+                    //popup with not correct solution
+                    string message = "The solution provided is not correct, please try again.";
+                    string caption = "Incorrect";
+                    MessageBox.Show(message, caption);
+                }
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -210,6 +260,29 @@ namespace sudoku
             g.DrawLine(Pens.DarkGray, 337, 30, 337, 520);
             g.DrawLine(Pens.DarkGray, 10, 192, 500, 192);
             g.DrawLine(Pens.DarkGray, 10, 357, 500, 357);
+        }
+
+        private void tsHint_Click(object sender, EventArgs e)
+        {
+            //Console.Out.WriteLine("hinting");
+            //grab a hint from puzzle and show it
+            int[][] hintPuzz = puzzle.hint();
+            for (int i=0; i<9; i++)
+                for (int j=0; j<9; j++)
+                    foreach (Control c in Controls)
+                    {
+                        if (c is TextBox)
+                        {
+                            if (c.Tag.ToString() == (i.ToString() + j.ToString()) && c.Text != hintPuzz[i][j].ToString() && hintPuzz[i][j] != 0)
+                            {
+                                c.Text = hintPuzz[i][j].ToString();
+                                c.ForeColor = Color.DarkCyan;
+                                GridSelector selector = (GridSelector)c.Controls.Find("grid", true)[0];
+                                selector.Visible = false;
+                                hintsUsed += 1;
+                            }
+                        }
+                    }
         }
     }
 }

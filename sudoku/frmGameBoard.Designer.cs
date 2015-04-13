@@ -41,8 +41,8 @@
             this.tsSolver = new System.Windows.Forms.ToolStripMenuItem();
             this.tsReset = new System.Windows.Forms.ToolStripMenuItem();
             this.tsHint = new System.Windows.Forms.ToolStripMenuItem();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.toolStripMenuTimer = new System.Windows.Forms.ToolStripMenuItem();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,28 +77,28 @@
             // tsMainMenu
             // 
             this.tsMainMenu.Name = "tsMainMenu";
-            this.tsMainMenu.Size = new System.Drawing.Size(152, 22);
+            this.tsMainMenu.Size = new System.Drawing.Size(138, 22);
             this.tsMainMenu.Text = "Main Menu";
             this.tsMainMenu.Click += new System.EventHandler(this.tsMainMenu_Click);
             // 
             // tsNewGame
             // 
             this.tsNewGame.Name = "tsNewGame";
-            this.tsNewGame.Size = new System.Drawing.Size(152, 22);
+            this.tsNewGame.Size = new System.Drawing.Size(138, 22);
             this.tsNewGame.Text = "New Game";
             this.tsNewGame.Click += new System.EventHandler(this.tsNewGame_Click);
             // 
             // tsControls
             // 
             this.tsControls.Name = "tsControls";
-            this.tsControls.Size = new System.Drawing.Size(152, 22);
+            this.tsControls.Size = new System.Drawing.Size(138, 22);
             this.tsControls.Text = "Controls";
             this.tsControls.Click += new System.EventHandler(this.tsControls_Click);
             // 
             // tsDone
             // 
             this.tsDone.Name = "tsDone";
-            this.tsDone.Size = new System.Drawing.Size(152, 22);
+            this.tsDone.Size = new System.Drawing.Size(138, 22);
             this.tsDone.Text = "Done";
             this.tsDone.Click += new System.EventHandler(this.tsDone_Click);
             // 
@@ -106,14 +106,14 @@
             // 
             this.tsSave.Name = "tsSave";
             this.tsSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.tsSave.Size = new System.Drawing.Size(152, 22);
+            this.tsSave.Size = new System.Drawing.Size(138, 22);
             this.tsSave.Text = "Save";
             // 
             // tsExit
             // 
             this.tsExit.Name = "tsExit";
             this.tsExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.tsExit.Size = new System.Drawing.Size(152, 22);
+            this.tsExit.Size = new System.Drawing.Size(138, 22);
             this.tsExit.Text = "Exit";
             this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
             // 
@@ -129,7 +129,7 @@
             this.tsSolver.Name = "tsSolver";
             this.tsSolver.Size = new System.Drawing.Size(51, 20);
             this.tsSolver.Text = "Solver";
-            this.tsSolver.Click += new System.EventHandler(this.tsSolver_Click);
+            this.tsSolver.Visible = false;
             // 
             // tsReset
             // 
@@ -143,19 +143,20 @@
             this.tsHint.Name = "tsHint";
             this.tsHint.Size = new System.Drawing.Size(42, 20);
             this.tsHint.Text = "Hint";
+            this.tsHint.Click += new System.EventHandler(this.tsHint_Click);
+            // 
+            // toolStripMenuTimer
+            // 
+            this.toolStripMenuTimer.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripMenuTimer.Name = "toolStripMenuTimer";
+            this.toolStripMenuTimer.Size = new System.Drawing.Size(94, 20);
+            this.toolStripMenuTimer.Text = "Time: 00:00:00";
             // 
             // timer1
             // 
             this.timer1.Enabled = true;
             this.timer1.Interval = 500;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // toolStripMenuTimer
-            // 
-            this.toolStripMenuTimer.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripMenuTimer.Name = "toolStripMenuTimer";
-            this.toolStripMenuTimer.Size = new System.Drawing.Size(58, 20);
-            this.toolStripMenuTimer.Text = "Time: 0";
             // 
             // frmGameBoard
             // 
