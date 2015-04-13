@@ -187,7 +187,7 @@ namespace sudoku
 
         private void tsReset_Click(object sender, EventArgs e)
         {
-            Console.Out.WriteLine("Resetting puzzle");
+            //Console.Out.WriteLine("Resetting puzzle");
             puzzle.puzzle = puzzle.resetPuzzle();
             fillGrid();
         }

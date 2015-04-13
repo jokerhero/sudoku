@@ -176,7 +176,7 @@ namespace sudoku
 
         private int[][] generateDifficulty(int wantedCells)
         {
-            int[][] puz = copy(generateInitial());
+            int[][] puz = copy(puzzle);
             int emptyCells = 0;
 
             bool[][] puzTried = new bool[9][];
@@ -259,12 +259,15 @@ namespace sudoku
         private int[][] removeRandomNumberAll(int[][] puz)
         {
             //this sucker just removes all of a random number from the puzzle
+            int[][] p = copy(puz);
             int r = randomNum(1, 9);
             for (int i = 0; i < 9; i++)
                 for (int j = 0; j < 9; j++)
-                    if (puz[i][j] == r)
-                        puz[i][j] = 0;
-            return puz;
+                    if (p[i][j] == r)
+                    {
+                        p[i][j] = 0;
+                    }
+            return p;
         }
 
         private int[][] generateInitial()
