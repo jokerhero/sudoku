@@ -27,6 +27,7 @@ namespace sudoku
         int hintsUsed = 0;
         bool solver = false;
         bool inProgress = true;
+        bool saved = false;
 
         public frmGameBoard(Difficulty difficulty)
         {
@@ -34,6 +35,15 @@ namespace sudoku
             puzzle.generatePuzzle(difficulty);
             InitializeComponent();
             initGrid();
+            startTimer();
+        }
+
+        public frmGameBoard(Sudoku sudoku)
+        {
+            puzzle = sudoku;
+            InitializeComponent();
+            initGrid();
+            fillGrid();
             startTimer();
         }
 
@@ -60,9 +70,9 @@ namespace sudoku
                 for (int j = 0; j < 9; j++)
                 {
                     grid[i, j] = new TextBox();
-                    grid[i, j].Text = puzzle.puzzle[i][j] == 0 ? "" : puzzle.puzzle[i][j].ToString();
-                    grid[i, j].ForeColor = puzzle.puzzle[i][j] == 0 ? Color.DarkBlue : Color.Black;
-                    grid[i, j].Font = puzzle.puzzle[i][j] == 0 ? new Font(grid[i, j].Font.FontFamily,fontSize, FontStyle.Regular) : new Font(grid[i, j].Font.FontFamily, fontSize, FontStyle.Bold);
+                    grid[i, j].Text = puzzle.origPuzzle[i][j] == 0 ? "" : puzzle.origPuzzle[i][j].ToString();
+                    grid[i, j].ForeColor = puzzle.origPuzzle[i][j] == 0 ? Color.DarkBlue : Color.Black;
+                    grid[i, j].Font = puzzle.origPuzzle[i][j] == 0 ? new Font(grid[i, j].Font.FontFamily,fontSize, FontStyle.Regular) : new Font(grid[i, j].Font.FontFamily, fontSize, FontStyle.Bold);
                     grid[i, j].ReadOnly = true;
                     grid[i, j].TabStop = false;
                     if (i < 3 && (j < 3 || j > 5) || i > 5 && (j < 3 || j > 5) || (i > 2 && i < 6) && (j > 2 && j < 6))
@@ -81,7 +91,7 @@ namespace sudoku
                     grid[i, j].ShortcutsEnabled = false;
                     grid[i, j].Cursor = Cursors.Arrow;
                     grid[i, j].Tag = i.ToString() + j.ToString();
-                    if (puzzle.puzzle[i][j] == 0)
+                    if (puzzle.origPuzzle[i][j] == 0)
                     {
                         GridSelector selector = new GridSelector(grid[i,j]);
                         selector.Dock = DockStyle.Fill;
@@ -110,9 +120,12 @@ namespace sudoku
                     }
                     else
                     {
-                        GridSelector selector = (GridSelector)grid[i, j].Controls.Find("grid", true)[0];
-                        selector.reset();
-                        selector.Visible = false;
+                        if (grid[i, j].HasChildren)
+                        {
+                            GridSelector selector = (GridSelector)grid[i, j].Controls.Find("grid", true)[0];
+                            selector.reset();
+                            selector.Visible = false;
+                        }
                     }
                 }
         }
@@ -202,10 +215,22 @@ namespace sudoku
             //this.Close();
             if (inProgress)
             {
-                puzzle.stopTimer();
-                puzzle.saveProgress();
+                if (!saved)
+                {
+                    puzzle.stopTimer();
+                    puzzle.saveProgress();
+                    saved = true; //needed to prevent double saves as I can't pinpoint why it is double saving
+                }
             }
-            //this.Close();
+            //this.Parent.Show();
+            if (this.Parent == null)
+            {
+                Application.Exit();
+            }
+            else
+            {
+                this.Parent.Show();
+            }
         }
 
         private void tsReset_Click(object sender, EventArgs e)

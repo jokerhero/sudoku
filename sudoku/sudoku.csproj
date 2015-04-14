@@ -164,7 +164,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Sudoku.sqlite" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SQLite\System.Data.SQLite.dll" />

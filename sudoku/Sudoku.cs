@@ -13,7 +13,7 @@ using System.Data.SQLite;
 
 namespace sudoku
 {
-    class Sudoku
+    public class Sudoku
     {
         public class Highscore
         {
@@ -24,7 +24,7 @@ namespace sudoku
 
         int[][] puzzleSolution { get; set; }
         public int[][] puzzle { get; set; }
-        private int[][] origPuzzle { get; set; }
+        public int[][] origPuzzle { get; set; }
         private int totalTime { get; set; }         //the total time taken so far - seconds
         private Difficulty selectedDifficulty {get; set; }
 
@@ -525,7 +525,7 @@ namespace sudoku
             String difficulty = selectedDifficulty.ToString();
 
             m_dbConnection.Open();
-            String sql = "insert into games (date, solution, puzzle, original, time, difficulty) values (" + date + ", '" + solution + "', '" + puzzle + "', '" + original + "', " + time + ", '" + difficulty + "')";
+            String sql = "insert into games (date, solution, puzzle, original, time, difficulty) values (" + date.ToString() + ", '" + solution + "', '" + puzzle + "', '" + original + "', " + time + ", '" + difficulty + "')";
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
 
@@ -544,7 +544,7 @@ namespace sudoku
             long date = now.Ticks;
 
             m_dbConnection.Open();
-            String sql = "insert into highscores (date, time, difficulty) values (" + date + ", '" + time + "', '" + difficulty + "')";
+            String sql = "insert into highscores (date, time, difficulty) values (" + date.ToString() + ", '" + time + "', '" + difficulty + "')";
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
 
@@ -553,6 +553,7 @@ namespace sudoku
 
         public int[][] loadGame(long dateTime)
         {
+            checkDatabaseExists();
             //need to specify data type to return and what parameter to return
             //we need to retrieve the board from the database along with the time so far.
             m_dbConnection.Open();
@@ -561,11 +562,15 @@ namespace sudoku
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
+                //Console.Out.WriteLine("Loading puzzle");
                 this.puzzleSolution = convertStringToInt((String)reader["solution"]);
+                writeArrayToConsole(this.puzzleSolution);
                 this.puzzle = convertStringToInt((String)reader["puzzle"]);
+                writeArrayToConsole(this.puzzle);
                 this.origPuzzle = convertStringToInt((String)reader["original"]);
+                writeArrayToConsole(this.origPuzzle);
                 this.totalTime = Convert.ToInt32(reader["time"]);
-                this.selectedDifficulty = (Difficulty)reader["difficulty"];
+                this.selectedDifficulty = (Difficulty) Enum.Parse(typeof(Difficulty), (String) reader["difficulty"], true);
             }
             reader.Close();
             command.Dispose();
@@ -582,6 +587,7 @@ namespace sudoku
 
         public List<long> getGames()
         {
+            checkDatabaseExists();
             //returns a list of all games that are saved
             //games are sorted by date
             List<long> list = new List<long>();
@@ -591,7 +597,10 @@ namespace sudoku
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                list.Add((long)reader["date"]);
+                long date;
+                long.TryParse((String)reader["date"], out date);
+                Console.Out.WriteLine("Found: " + date);
+                list.Add(date);
             }
 
             m_dbConnection.Close();
@@ -600,6 +609,7 @@ namespace sudoku
 
         public List<Highscore> getHighScore(Difficulty difficulty)
         {
+            checkDatabaseExists();
             //returns the HighScores for the specified difficulty level
             // we are only returning the ten best
             //sorted by best time
@@ -627,6 +637,7 @@ namespace sudoku
 
         public List<Highscore> getHighScores()
         {
+            checkDatabaseExists();
             //returns top ten high scores for all difficulties
             //sorted by difficulty and best time
             List<Highscore> scores = new List<Highscore>();
@@ -652,12 +663,14 @@ namespace sudoku
         private int[][] convertStringToInt(String data)
         {
             int[][] t = new int[9][];
+            int count = 0;
             for (int i = 0; i < 9; i++)
             {
                 t[i] = new int[9];
                 for (int j = 0; j < 9; j++)
                 {
-                    t[i][j] = Convert.ToInt32(data[((i+1)*(j+1))-1]);
+                    t[i][j] = Convert.ToInt32(data[count].ToString());
+                    count += 1;
                 }
             }
             return t;
@@ -672,7 +685,7 @@ namespace sudoku
             SQLiteDataReader reader = command.ExecuteReader();
             if (!reader.HasRows)
             {
-                String sql = "CREATE TABLE highscores(date NUMERIC PRIMARY KEY, time TEXT, difficulty TEXT)";
+                String sql = "CREATE TABLE highscores(date TEXT PRIMARY KEY, time TEXT, difficulty TEXT)";
                 SQLiteCommand cmd = new SQLiteCommand(sql, m_dbConnection);
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
@@ -683,7 +696,7 @@ namespace sudoku
             reader = command.ExecuteReader();
             if (!reader.HasRows)
             {
-                String sql = "CREATE TABLE games (date NUMERIC PRIMARY KEY, solution TEXT, puzzle TEXT, original TEXT, time INTEGER, difficulty TEXT)";
+                String sql = "CREATE TABLE games (date TEXT PRIMARY KEY, solution TEXT, puzzle TEXT, original TEXT, time INTEGER, difficulty TEXT)";
                 SQLiteCommand cmd = new SQLiteCommand(sql, m_dbConnection);
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();

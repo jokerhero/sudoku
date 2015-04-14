@@ -28,7 +28,7 @@ namespace sudoku
             //new_game.RefTofrmSudokuMM = this;
             //this.Visible = false;
             new_game.Show();
-            //this.Hide();
+            this.Hide();
         }
         //Opens Solver
         private void btnSolver_Click(object sender, EventArgs e)
@@ -46,16 +46,25 @@ namespace sudoku
         //Continue last saved game
         private void btnContinue_Click(object sender, EventArgs e)
         {
-
+            // We should actually present a window with all games available
+            // That window can have a last game played button
+            Sudoku sudoku = new Sudoku();
+            List<long> games = sudoku.getGames();
+            if (games.Count > 0)
+            {
+                long gameToLoad = games[0];
+                Console.Out.WriteLine("Loading game: " + gameToLoad);
+                sudoku.loadGame(gameToLoad);
+                frmGameBoard frmGame = new frmGameBoard(sudoku);
+                frmGame.Show();
+                this.Hide();
+            }
+            else
+            {
+                String message = "There are no pending games";
+                String caption = "No Games";
+                MessageBox.Show(message, caption);
+            }
         }
-        //Upon clicking [X] application will ask if wanting to close and gives options.
-        //private void frmSudokuMM_Closing(object sender, FormClosingEventArgs e)
-        //{ 
-        //DialogResult result = MessageBox.Show("Do you wish to close?", string.Empty, MessageBoxButtons.YesNo);
-        //if (result == DialogResult.No)
-        //{ 
-        //    e.Cancel = true;
-        //}
-        //}
     }
 }
