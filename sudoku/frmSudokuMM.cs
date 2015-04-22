@@ -23,10 +23,7 @@ namespace sudoku
         //Opens New Game
         private void btnNewGame_Click(object sender, EventArgs e)
         {
-            frmNewGame new_game = new frmNewGame(this);
-            //Gives reference to new window and hide this while opening next
-            //new_game.RefTofrmSudokuMM = this;
-            //this.Visible = false;
+            frmNewGame new_game = new frmNewGame();
             new_game.Show();
             this.Hide();
         }
@@ -35,6 +32,7 @@ namespace sudoku
         {
             frmGameBoard solver = new frmGameBoard();
             solver.Show();
+            this.Hide();
         }
         //Opens High Scores
         private void btnHighScores_Click(object sender, EventArgs e)
@@ -49,7 +47,7 @@ namespace sudoku
             // We should actually present a window with all games available
             // That window can have a last game played button
             Sudoku sudoku = new Sudoku();
-            List<long> games = sudoku.getGames();
+            List<long> games = Sudoku.getGames();
             if (games.Count > 0)
             {
                 long gameToLoad = games[0];
@@ -64,6 +62,15 @@ namespace sudoku
                 String message = "There are no pending games";
                 String caption = "No Games";
                 MessageBox.Show(message, caption);
+            }
+        }
+
+        private void frmSudokuMM_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                Console.Out.WriteLine("Closing Application");
+                Application.Exit();
             }
         }
     }

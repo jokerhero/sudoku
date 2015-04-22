@@ -42,10 +42,11 @@
             this.txtSelect.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtSelect.Enabled = false;
             this.txtSelect.Font = new System.Drawing.Font("Segoe Marker", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSelect.Location = new System.Drawing.Point(47, 42);
+            this.txtSelect.Location = new System.Drawing.Point(63, 52);
+            this.txtSelect.Margin = new System.Windows.Forms.Padding(4);
             this.txtSelect.Name = "txtSelect";
             this.txtSelect.ReadOnly = true;
-            this.txtSelect.Size = new System.Drawing.Size(267, 38);
+            this.txtSelect.Size = new System.Drawing.Size(356, 47);
             this.txtSelect.TabIndex = 0;
             this.txtSelect.Text = "Select Your Difficulty";
             this.txtSelect.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -55,9 +56,10 @@
             this.btnEasy.BackColor = System.Drawing.Color.LimeGreen;
             this.btnEasy.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnEasy.Font = new System.Drawing.Font("Segoe Marker", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnEasy.Location = new System.Drawing.Point(103, 115);
+            this.btnEasy.Location = new System.Drawing.Point(137, 142);
+            this.btnEasy.Margin = new System.Windows.Forms.Padding(4);
             this.btnEasy.Name = "btnEasy";
-            this.btnEasy.Size = new System.Drawing.Size(150, 50);
+            this.btnEasy.Size = new System.Drawing.Size(200, 62);
             this.btnEasy.TabIndex = 1;
             this.btnEasy.Text = "Easy";
             this.btnEasy.UseVisualStyleBackColor = false;
@@ -68,9 +70,10 @@
             this.btnMedium.BackColor = System.Drawing.Color.Gold;
             this.btnMedium.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnMedium.Font = new System.Drawing.Font("Segoe Marker", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMedium.Location = new System.Drawing.Point(103, 196);
+            this.btnMedium.Location = new System.Drawing.Point(137, 241);
+            this.btnMedium.Margin = new System.Windows.Forms.Padding(4);
             this.btnMedium.Name = "btnMedium";
-            this.btnMedium.Size = new System.Drawing.Size(150, 50);
+            this.btnMedium.Size = new System.Drawing.Size(200, 62);
             this.btnMedium.TabIndex = 2;
             this.btnMedium.Text = "Medium";
             this.btnMedium.UseVisualStyleBackColor = false;
@@ -81,9 +84,10 @@
             this.btnHard.BackColor = System.Drawing.Color.Red;
             this.btnHard.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnHard.Font = new System.Drawing.Font("Segoe Marker", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnHard.Location = new System.Drawing.Point(103, 273);
+            this.btnHard.Location = new System.Drawing.Point(137, 336);
+            this.btnHard.Margin = new System.Windows.Forms.Padding(4);
             this.btnHard.Name = "btnHard";
-            this.btnHard.Size = new System.Drawing.Size(150, 50);
+            this.btnHard.Size = new System.Drawing.Size(200, 62);
             this.btnHard.TabIndex = 3;
             this.btnHard.Text = "Hard";
             this.btnHard.UseVisualStyleBackColor = false;
@@ -94,9 +98,10 @@
             this.btnBack.BackColor = System.Drawing.Color.Peru;
             this.btnBack.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnBack.Font = new System.Drawing.Font("Segoe Marker", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnBack.Location = new System.Drawing.Point(3, 336);
+            this.btnBack.Location = new System.Drawing.Point(4, 414);
+            this.btnBack.Margin = new System.Windows.Forms.Padding(4);
             this.btnBack.Name = "btnBack";
-            this.btnBack.Size = new System.Drawing.Size(50, 20);
+            this.btnBack.Size = new System.Drawing.Size(67, 25);
             this.btnBack.TabIndex = 4;
             this.btnBack.Text = "Back";
             this.btnBack.UseVisualStyleBackColor = false;
@@ -104,18 +109,21 @@
             // 
             // frmNewGame
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(361, 359);
+            this.ClientSize = new System.Drawing.Size(481, 442);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.btnHard);
             this.Controls.Add(this.btnMedium);
             this.Controls.Add(this.btnEasy);
             this.Controls.Add(this.txtSelect);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmNewGame";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "New Game";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmNewGame_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

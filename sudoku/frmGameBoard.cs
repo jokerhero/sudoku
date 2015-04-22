@@ -28,6 +28,7 @@ namespace sudoku
         bool solver = false;
         bool inProgress = true;
         bool saved = false;
+        bool exiting = false;
 
         public frmGameBoard(Difficulty difficulty)
         {
@@ -55,6 +56,10 @@ namespace sudoku
             //startTimer(); no need for a timer on the solver
             solver = true;
             inProgress = false;
+            tsHint.Visible = false;
+            tsNewGame.Visible = false;
+            tsSave.Visible = false;
+            toolStripMenuTimer.Visible = false;
         }
 
         private void startTimer()
@@ -132,8 +137,8 @@ namespace sudoku
 
         private void tsMainMenu_Click(object sender, EventArgs e)
         {
-            frmSudokuMM main = new frmSudokuMM();
-            main.Show();
+            //frmSudokuMM main = new frmSudokuMM();
+            //main.Show();
             this.Close();
         }
 
@@ -141,8 +146,6 @@ namespace sudoku
         {
             if (MessageBox.Show("Do you want to start a new game?", "Start new game?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                frmNewGame new_game = new frmNewGame(this);
-                new_game.Show();
                 inProgress = false;
                 this.Close();
             }
@@ -156,8 +159,14 @@ namespace sudoku
 
         private void tsExit_Click(object sender, EventArgs e)
         {
-            //closing();
-            this.Close();
+            //Exit the app with confirmation
+            string message = "Are you sure you'd like to exit?";
+            string caption = "Exit";
+            if (MessageBox.Show(message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                exiting = true;
+                closing();
+            }
         }
 
         private void tsHelp_Click(object sender, EventArgs e)
@@ -211,8 +220,6 @@ namespace sudoku
 
         private void closing()
         {
-            //todo add save
-            //this.Close();
             if (inProgress)
             {
                 if (!saved)
@@ -222,14 +229,13 @@ namespace sudoku
                     saved = true; //needed to prevent double saves as I can't pinpoint why it is double saving
                 }
             }
-            //this.Parent.Show();
-            if (this.Parent == null)
-            {
+            if (exiting)
                 Application.Exit();
-            }
             else
             {
-                this.Parent.Show();
+                //Close this form and open main menu again
+                frmSudokuMM main = new frmSudokuMM();
+                main.Show();
             }
         }
 
@@ -246,7 +252,17 @@ namespace sudoku
             if (solver)
             {
                 //we just need to check for the solution now
-                puzzle.puzzle = Sudoku.solveArray(puzzle.puzzle);
+                int solutions = Sudoku.solvedSolutions(puzzle.puzzle); //order matters
+                int[][] solved = Sudoku.solveArray(puzzle.puzzle);
+                if (solved[0][0] == 1 && solved[1][0] == 1 || solutions != 1)
+                {
+                    String message = "This is an invalid puzzle";
+                    message += "\n";
+                    message += solutions > 1 ? "Too many solutions: " + solutions : "No solution";
+                    MessageBox.Show(message, "No Solution");
+                    return;
+                }
+                puzzle.puzzle = solved;
                 fillGrid();
             }
             else
@@ -260,6 +276,9 @@ namespace sudoku
                     {
                         puzzle.saveHighScore();
                     }
+                    string message = "Congratulations, you solved the puzzle!";
+                    string caption = "Correct";
+                    MessageBox.Show(message, caption);
                     this.Close();
                 }
                 else

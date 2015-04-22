@@ -48,6 +48,7 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuToolStripMenuItem,
             this.tsHelp,
@@ -57,7 +58,8 @@
             this.toolStripMenuTimer});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(508, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(675, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -71,34 +73,36 @@
             this.tsSave,
             this.tsExit});
             this.menuToolStripMenuItem.Name = "menuToolStripMenuItem";
-            this.menuToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.menuToolStripMenuItem.Size = new System.Drawing.Size(58, 24);
             this.menuToolStripMenuItem.Text = "Menu";
             // 
             // tsMainMenu
             // 
             this.tsMainMenu.Name = "tsMainMenu";
-            this.tsMainMenu.Size = new System.Drawing.Size(138, 22);
+            this.tsMainMenu.Size = new System.Drawing.Size(159, 24);
             this.tsMainMenu.Text = "Main Menu";
             this.tsMainMenu.Click += new System.EventHandler(this.tsMainMenu_Click);
             // 
             // tsNewGame
             // 
             this.tsNewGame.Name = "tsNewGame";
-            this.tsNewGame.Size = new System.Drawing.Size(138, 22);
+            this.tsNewGame.Size = new System.Drawing.Size(159, 24);
             this.tsNewGame.Text = "New Game";
+            this.tsNewGame.Visible = false;
             this.tsNewGame.Click += new System.EventHandler(this.tsNewGame_Click);
             // 
             // tsControls
             // 
             this.tsControls.Name = "tsControls";
-            this.tsControls.Size = new System.Drawing.Size(138, 22);
+            this.tsControls.Size = new System.Drawing.Size(159, 24);
             this.tsControls.Text = "Controls";
+            this.tsControls.Visible = false;
             this.tsControls.Click += new System.EventHandler(this.tsControls_Click);
             // 
             // tsDone
             // 
             this.tsDone.Name = "tsDone";
-            this.tsDone.Size = new System.Drawing.Size(138, 22);
+            this.tsDone.Size = new System.Drawing.Size(159, 24);
             this.tsDone.Text = "Done";
             this.tsDone.Click += new System.EventHandler(this.tsDone_Click);
             // 
@@ -106,42 +110,43 @@
             // 
             this.tsSave.Name = "tsSave";
             this.tsSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.tsSave.Size = new System.Drawing.Size(138, 22);
+            this.tsSave.Size = new System.Drawing.Size(159, 24);
             this.tsSave.Text = "Save";
+            this.tsSave.Visible = false;
             // 
             // tsExit
             // 
             this.tsExit.Name = "tsExit";
             this.tsExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.tsExit.Size = new System.Drawing.Size(138, 22);
+            this.tsExit.Size = new System.Drawing.Size(159, 24);
             this.tsExit.Text = "Exit";
             this.tsExit.Click += new System.EventHandler(this.tsExit_Click);
             // 
             // tsHelp
             // 
             this.tsHelp.Name = "tsHelp";
-            this.tsHelp.Size = new System.Drawing.Size(44, 20);
+            this.tsHelp.Size = new System.Drawing.Size(53, 24);
             this.tsHelp.Text = "Help";
             this.tsHelp.Click += new System.EventHandler(this.tsHelp_Click);
             // 
             // tsSolver
             // 
             this.tsSolver.Name = "tsSolver";
-            this.tsSolver.Size = new System.Drawing.Size(51, 20);
+            this.tsSolver.Size = new System.Drawing.Size(62, 24);
             this.tsSolver.Text = "Solver";
             this.tsSolver.Visible = false;
             // 
             // tsReset
             // 
             this.tsReset.Name = "tsReset";
-            this.tsReset.Size = new System.Drawing.Size(47, 20);
+            this.tsReset.Size = new System.Drawing.Size(57, 24);
             this.tsReset.Text = "Reset";
             this.tsReset.Click += new System.EventHandler(this.tsReset_Click);
             // 
             // tsHint
             // 
             this.tsHint.Name = "tsHint";
-            this.tsHint.Size = new System.Drawing.Size(42, 20);
+            this.tsHint.Size = new System.Drawing.Size(49, 24);
             this.tsHint.Text = "Hint";
             this.tsHint.Click += new System.EventHandler(this.tsHint_Click);
             // 
@@ -149,7 +154,7 @@
             // 
             this.toolStripMenuTimer.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripMenuTimer.Name = "toolStripMenuTimer";
-            this.toolStripMenuTimer.Size = new System.Drawing.Size(94, 20);
+            this.toolStripMenuTimer.Size = new System.Drawing.Size(115, 24);
             this.toolStripMenuTimer.Text = "Time: 00:00:00";
             // 
             // timer1
@@ -160,15 +165,17 @@
             // 
             // frmGameBoard
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(508, 526);
+            this.ClientSize = new System.Drawing.Size(675, 638);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(524, 565);
-            this.MinimumSize = new System.Drawing.Size(524, 565);
+            this.MaximumSize = new System.Drawing.Size(693, 685);
+            this.MinimumSize = new System.Drawing.Size(693, 685);
             this.Name = "frmGameBoard";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sudoku";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmGameBoard_FormClosing);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.frmGameBoard_Paint);

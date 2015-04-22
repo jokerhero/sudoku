@@ -42,10 +42,11 @@
             this.txtSudoku.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtSudoku.Enabled = false;
             this.txtSudoku.Font = new System.Drawing.Font("Segoe Marker", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSudoku.Location = new System.Drawing.Point(79, 45);
+            this.txtSudoku.Location = new System.Drawing.Point(105, 55);
+            this.txtSudoku.Margin = new System.Windows.Forms.Padding(4);
             this.txtSudoku.Name = "txtSudoku";
             this.txtSudoku.ReadOnly = true;
-            this.txtSudoku.Size = new System.Drawing.Size(201, 38);
+            this.txtSudoku.Size = new System.Drawing.Size(268, 47);
             this.txtSudoku.TabIndex = 0;
             this.txtSudoku.Text = "Sudoku";
             this.txtSudoku.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -55,9 +56,10 @@
             this.btnNewGame.BackColor = System.Drawing.Color.Peru;
             this.btnNewGame.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnNewGame.Font = new System.Drawing.Font("Segoe Marker", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnNewGame.Location = new System.Drawing.Point(101, 95);
+            this.btnNewGame.Location = new System.Drawing.Point(135, 117);
+            this.btnNewGame.Margin = new System.Windows.Forms.Padding(4);
             this.btnNewGame.Name = "btnNewGame";
-            this.btnNewGame.Size = new System.Drawing.Size(150, 50);
+            this.btnNewGame.Size = new System.Drawing.Size(200, 62);
             this.btnNewGame.TabIndex = 1;
             this.btnNewGame.Text = "New Game";
             this.btnNewGame.UseVisualStyleBackColor = false;
@@ -68,9 +70,10 @@
             this.btnContinue.BackColor = System.Drawing.Color.Peru;
             this.btnContinue.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnContinue.Font = new System.Drawing.Font("Segoe Marker", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnContinue.Location = new System.Drawing.Point(101, 156);
+            this.btnContinue.Location = new System.Drawing.Point(135, 192);
+            this.btnContinue.Margin = new System.Windows.Forms.Padding(4);
             this.btnContinue.Name = "btnContinue";
-            this.btnContinue.Size = new System.Drawing.Size(150, 50);
+            this.btnContinue.Size = new System.Drawing.Size(200, 62);
             this.btnContinue.TabIndex = 2;
             this.btnContinue.Text = "Continue";
             this.btnContinue.UseVisualStyleBackColor = false;
@@ -81,9 +84,10 @@
             this.btnSolver.BackColor = System.Drawing.Color.Peru;
             this.btnSolver.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnSolver.Font = new System.Drawing.Font("Segoe Marker", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSolver.Location = new System.Drawing.Point(101, 217);
+            this.btnSolver.Location = new System.Drawing.Point(135, 267);
+            this.btnSolver.Margin = new System.Windows.Forms.Padding(4);
             this.btnSolver.Name = "btnSolver";
-            this.btnSolver.Size = new System.Drawing.Size(150, 50);
+            this.btnSolver.Size = new System.Drawing.Size(200, 62);
             this.btnSolver.TabIndex = 3;
             this.btnSolver.Text = "Solver";
             this.btnSolver.UseVisualStyleBackColor = false;
@@ -94,9 +98,10 @@
             this.btnHighScores.BackColor = System.Drawing.Color.Peru;
             this.btnHighScores.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnHighScores.Font = new System.Drawing.Font("Segoe Marker", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnHighScores.Location = new System.Drawing.Point(101, 277);
+            this.btnHighScores.Location = new System.Drawing.Point(135, 341);
+            this.btnHighScores.Margin = new System.Windows.Forms.Padding(4);
             this.btnHighScores.Name = "btnHighScores";
-            this.btnHighScores.Size = new System.Drawing.Size(150, 50);
+            this.btnHighScores.Size = new System.Drawing.Size(200, 62);
             this.btnHighScores.TabIndex = 4;
             this.btnHighScores.Text = "High Scores";
             this.btnHighScores.UseVisualStyleBackColor = false;
@@ -104,18 +109,21 @@
             // 
             // frmSudokuMM
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(359, 365);
+            this.ClientSize = new System.Drawing.Size(479, 449);
             this.Controls.Add(this.btnHighScores);
             this.Controls.Add(this.btnSolver);
             this.Controls.Add(this.btnContinue);
             this.Controls.Add(this.btnNewGame);
             this.Controls.Add(this.txtSudoku);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmSudokuMM";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sudoku";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmSudokuMM_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

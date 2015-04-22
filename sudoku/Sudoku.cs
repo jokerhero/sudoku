@@ -15,11 +15,17 @@ namespace sudoku
 {
     public class Sudoku
     {
-        public class Highscore
+        public class Entry
         {
             public long Date;
-            public String Difficulty;
             public int time;
+        }
+
+        public class Highscore
+        {
+            public int count;
+            public Difficulty difficulty;
+            public List<Entry> entries;
         }
 
         int[][] puzzleSolution { get; set; }
@@ -33,6 +39,7 @@ namespace sudoku
             totalTime = 0;
             puzzleSolution = copy(initializePuzzleArray());
             puzzle = copy(puzzleSolution);
+            origPuzzle = copy(puzzle);
             totalTime = 0;
             //writeArrayToConsole(puzzleSolution);
         }
@@ -377,8 +384,9 @@ namespace sudoku
 
         #region "Solver Code"
 
-        private static int solvedSolutions(int[][] puzzleToSolve)
+        public static int solvedSolutions(int[][] puzzleToSolve)
         {
+            writeArrayToConsole(puzzleToSolve);
             int[][] solutions = solveArr(puzzleToSolve, true);
             return solutions[0][0];
         }
@@ -433,16 +441,26 @@ namespace sudoku
                         model.AddConstraint("v" + i + j, grid[i][j] == puzzleToSolve[i][j]);
             
             //now solve it
+            Solution solution = problem.Solve();
+
             if (count)
             {
-                int numSolutions = NumberSolutions(problem);
+                int ct = 0;
+
+                while (solution.Quality == SolverQuality.Feasible)
+                {
+                    ++ct;
+                    solution.GetNext();
+                    if (ct >= 100)
+                        break;
+                }
+
                 int[][] solutions = new int[1][];
                 solutions[0] = new int[1];
-                solutions[0][0] = numSolutions;
+                solutions[0][0] = ct;
+                Console.Out.WriteLine("Solutions: " + ct);
                 return solutions;
             }
-
-            Solution solution = problem.Solve();
 
             int[][] solvedPuzzle = new int[9][];
             for (int i = 0; i < 9; i++)
@@ -465,6 +483,8 @@ namespace sudoku
             {
                 ++ct;
                 soln.GetNext();
+                if (ct >= 100)
+                    break;
             }
             return ct;
         }
@@ -506,7 +526,7 @@ namespace sudoku
         #region "Database Operations"
 
         private static String path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source=" + path + "\\sudoku.sqlite;Version=3;");
+        private static SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source=" + path + "\\sudoku.sqlite;Version=3;");
 
         public void saveProgress()
         {
@@ -585,7 +605,8 @@ namespace sudoku
             return this.puzzle;
         }
 
-        public List<long> getGames()
+        //this can be static since we do not need a sudoku object to use this
+        public static List<long> getGames()
         {
             checkDatabaseExists();
             //returns a list of all games that are saved
@@ -607,43 +628,63 @@ namespace sudoku
             return list;
         }
 
-        public List<Highscore> getHighScore(Difficulty difficulty)
+        //we do not need a sudoku object to use this
+        public static Highscore getHighScore(Difficulty difficulty)
         {
             checkDatabaseExists();
-            //returns the HighScores for the specified difficulty level
+            // returns the HighScores for the specified difficulty level
             // we are only returning the ten best
-            //sorted by best time
+            // sorted by best time
 
-            List<Highscore> scores = new List<Highscore>();
+            Highscore scores = new Highscore();
+            scores.entries = new List<Entry>();
 
             m_dbConnection.Open();
-            String sql = "select * from highscores where difficulty=" + difficulty.ToString() + " order by time limit 10";
+            String sql = "select * from highscores where difficulty='" + difficulty.ToString() + "' order by time limit 10";
+            Console.Out.WriteLine(sql);
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             SQLiteDataReader reader = command.ExecuteReader();
+
             while (reader.Read())
             {
-                Highscore tScore = new Highscore();
-                tScore.time = (int)reader["time"];
-                tScore.Difficulty = (String)reader["difficulty"];
-                tScore.Date = (long)reader["date"];
-
-                scores.Add(tScore);
+                Entry entry = new Entry();
+                entry.time = Convert.ToInt32(reader["time"]);
+                entry.Date = Convert.ToInt64(reader["date"]);
+                scores.entries.Add(entry);
             }
 
+            reader.Dispose();
+            command.Dispose();
+
+            sql = "select count(*) as c from highscores where difficulty='" + difficulty.ToString() + "'";
+            command = new SQLiteCommand(sql, m_dbConnection);
+            reader = command.ExecuteReader();
+            int count = 0;
+            while (reader.Read())
+            {
+                count = Convert.ToInt32(reader["c"]);
+            }
+
+            reader.Dispose();
+            command.Dispose();
             m_dbConnection.Close();
+
+            scores.difficulty = difficulty;
+            scores.count = count;
 
             return scores;
         }
 
-        public List<Highscore> getHighScores()
+        //static as a sudoku object is not needed for this
+        public static List<Highscore> getHighScores()
         {
             checkDatabaseExists();
             //returns top ten high scores for all difficulties
             //sorted by difficulty and best time
             List<Highscore> scores = new List<Highscore>();
-            scores.AddRange(getHighScore(Difficulty.EASY));
-            scores.AddRange(getHighScore(Difficulty.MEDIUM));
-            scores.AddRange(getHighScore(Difficulty.HARD));
+            scores.Add(getHighScore(Difficulty.EASY));
+            scores.Add(getHighScore(Difficulty.MEDIUM));
+            scores.Add(getHighScore(Difficulty.HARD));
             return scores;
         }
 
@@ -676,8 +717,9 @@ namespace sudoku
             return t;
         }
 
-        private void checkDatabaseExists()
+        private static void checkDatabaseExists()
         {
+            //This is needed to be sure the database exists since we are not including an installer
             m_dbConnection.Open();
             string sql_high = "SELECT name FROM sqlite_master WHERE type='table' AND name='highscores';";
             string sql_game = "SELECT name FROM sqlite_master WHERE type='table' AND name='games';";

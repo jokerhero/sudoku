@@ -40,7 +40,7 @@ namespace sudoku
             if (e.Button == MouseButtons.Left)
             {
                 //on left click eneable/disable numbers
-                if (temp.Text == "" || temp.ForeColor == Color.DarkGray)
+                if (temp.Text == "" || temp.ForeColor == Color.DarkGray || temp.ForeColor == Color.Chocolate)
                 {
                     temp.Name = "chosen";
                     temp.Text = temp.Tag.ToString();
@@ -71,7 +71,7 @@ namespace sudoku
             if (lab.Text == "" && lab.Name == "")
             {
                 lab.Text = lab.Tag.ToString();
-                lab.ForeColor = Color.DarkGray;
+                lab.ForeColor = Color.Chocolate;
                 lab.Name = "over";
             }
         }
